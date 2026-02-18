@@ -1,0 +1,107 @@
+import React from "react";
+import authBg from "../assets/authBg.png";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { userDataContext } from "../context/userContext";
+import axios from "axios";
+function SignIn() {
+  const [showPassword, setShowPassword] = useState(false);
+  const {serverUrl,userData,
+    setUserData}=useContext(userDataContext)
+  const navigate=useNavigate()
+  const [email,setEmail]=useState("")
+  const [password,setPassword]=useState("")
+  const [err,setErr]=useState("")
+  const [loading,setLoading]=useState(false)
+  const handleSignIn=async(e)=>{
+    e.preventDefault()
+    setErr("")
+    setLoading(true)
+ try {
+  let result= await axios.post(`${serverUrl}/api/auth/signin`,{
+    email,password
+  },{withCredentials:true})
+  setUserData(result.data)
+  setLoading(false)
+  alert("Signin successful!")
+  navigate("/")
+ } catch (error) {
+  console.log(error)
+  setLoading(false)
+  setUserData(null)
+  // Display the actual error message from the server
+  // const errorMessage = error.response?.data?.message || "Signup failed. Please try again."
+  // alert(errorMessage)
+  setErr(error.response.data.message)
+ }
+  }
+  return (
+    <div
+      className="w-full h-screen flex items-center justify-center "
+      style={{
+        backgroundImage: `url(${authBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Glass Card */}
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl px-8 py-10 border border-white/10">
+        {/* Heading */}
+        <h2 className="text-2xl font-semibold text-center text-white mb-8">
+          Sign In <span className="text-blue-400">Virtual Assistant</span>
+        </h2>
+
+        {/* Form */}
+        <form className="space-y-5" onSubmit={handleSignIn}>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full bg-transparent border border-white/40 rounded-full px-5 py-3 text-white placeholder-white/70 focus:outline-none focus:border-blue-400"
+             required onChange={(e)=>setEmail(e.target.value)}
+            value={email}
+          />
+
+          {/* Password Field */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="w-full px-6 py-3 rounded-full bg-transparent border border-white/30 text-white placeholder-white/60 focus:outline-none focus:border-white"
+               required onChange={(e)=>setPassword(e.target.value)}
+            value={password} 
+            />
+
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-white/70 cursor-pointer select-none"
+            >
+              {showPassword ? "🙈" : "👁"}
+            </span>
+          </div>
+          {err.length>0 && <p className="text-red-500 text-center">   
+            *{err} 
+          </p> }
+          {/* Button */}
+          <button
+            type="submit"
+            className="w-full bg-white text-gray-900 py-3 rounded-full font-semibold hover:bg-blue-500 hover:text-white transition duration-300"
+              disabled={loading}
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="text-center text-white/70 text-sm mt-6" onClick={()=>navigate("/signUp")}>
+         Want to create a new account ?{" "}
+          <span className="text-blue-400 cursor-pointer hover:underline">
+            Sign Up
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default SignIn;
