@@ -5,6 +5,7 @@ export const userDataContext = createContext();
 function userContext({ children }) {
   const serverUrl = "http://localhost:8000";
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [frontendImage, setFrontendImage] = useState(null);
   const [backendImage, setBackendImage] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -17,11 +18,14 @@ function userContext({ children }) {
       console.log(result.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   const value = {
     serverUrl,
     userData,
+    loading,
     setUserData,
     frontendImage,
     setFrontendImage,
