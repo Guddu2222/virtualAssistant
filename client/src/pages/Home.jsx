@@ -2,6 +2,8 @@ import React, { useContext } from 'react'
 import { userDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import axios from 'axios'
+import { useState } from 'react'
 function Home() {
   const {userData,serverUrl,setUserData, getGeminiResponse}=useContext(userDataContext)
   const navigate=useNavigate()
@@ -15,7 +17,10 @@ function Home() {
       console.log(error)
     }
   }
- 
+  const speak=(text)=>{
+    const utterance=new SpeechSynthesisUtterance(text) // convert text to speech
+    window.speechSynthesis.speak(utterance)
+  }
   useEffect(()=>{
     const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -26,22 +31,15 @@ function Home() {
     recognition.start();
     recognition.onresult= async (e)=>{
       const transcript=e.results[e.results.length-1][0].transcript.trim();
-      console.log("Heard", transcript);
+      console.log(transcript);
      if(transcript.toLowerCase().includes(userData.assistantName.toLowerCase())){
       const data= await getGeminiResponse(transcript)
       console.log(data)
+      speak(data.response)
      }
-
-
     }
   
   },[])
-
-
-
-
-
-
   return (
     <div className="w-full h-screen bg-linear-to-t from-[black] to-[#030358] flex justify-center items-center flex-col ">
       <button

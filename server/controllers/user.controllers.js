@@ -62,7 +62,7 @@ export const getAIResponse = async(req, res) => {
     const response=gemResult.response;
 
     switch(type){
-      case "get-data":
+      case "get-date":
        return res.json({
         type,
         userInput:gemResult.userInput,
