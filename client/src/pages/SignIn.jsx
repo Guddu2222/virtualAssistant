@@ -24,7 +24,7 @@ function SignIn() {
   },{withCredentials:true})
   setUserData(result.data)
   setLoading(false)
-  alert("Signin successful!")
+
   navigate("/")
  } catch (error) {
   console.log(error)
