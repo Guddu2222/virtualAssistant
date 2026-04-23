@@ -67,11 +67,31 @@ now your userInput-${command}
     })
   })
   const result = await response.json();
+  
+  if (result.error) {
+    if (result.error.status === "RESOURCE_EXHAUSTED" || result.error.code === 429) {
+      console.error("Gemini API Rate Limit Exceeded:", result.error.message);
+      return `{"type":"general", "userInput":"${command}", "response":"I'm currently receiving too many requests. Please try again in about 30 seconds."}`;
+    }
+    console.error("Gemini API Error Response:", JSON.stringify(result.error, null, 2));
+    return `{"type":"general", "userInput":"${command}", "response":"I experienced an internal API error. Please try again later."}`;
+  }
+
+  if (!result.candidates || result.candidates.length === 0) {
+    console.error("Gemini API returned an unexpected format:", JSON.stringify(result, null, 2));
+    return `{"type":"general", "userInput":"${command}", "response":"I'm sorry, I couldn't process that due to an API error."}`;
+  }
+  
+  if (!result.candidates[0].content) {
+     console.error("Gemini API returned a candidate without content (possibly a safety block):", JSON.stringify(result.candidates[0], null, 2));
+     return `{"type":"general", "userInput":"${command}", "response":"I'm sorry, I cannot process this request due to safety filters."}`;
+  }
+
   const data = result.candidates[0].content.parts[0].text;
   return data;
  } catch (error) {
   console.error("Gemini API Error:", error);
-  return { error: "Failed to generate AI response." };
+  return `{"type":"general", "userInput":"${command}", "response":"Failed to connect to the AI service."}`;
  } 
 }
 

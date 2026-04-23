@@ -21,6 +21,58 @@ function Home() {
     const utterance=new SpeechSynthesisUtterance(text) // convert text to speech
     window.speechSynthesis.speak(utterance)
   }
+
+  const handleCommand=(data)=>{
+    const{type,userInput,response}=data
+    speak(response);
+    if(type==="google-search"){
+      const query=encodeURIComponent(userInput)
+      window.open(`https://www.google.com/search?q=${query}`,'_blank')
+      
+    }
+    if(type==='calculator-open'){
+     window.open('https://www.google.com/search?q=calculator','_blank')
+    }
+    if(type==='weather-show'){
+      window.open('https://www.google.com/search?q=weather','_blank')
+    }
+    if(type==='instagram-open'){
+      window.open('https://www.instagram.com','_blank')
+    }
+    if(type==='facebook-open'){
+      window.open('https://www.facebook.com','_blank')
+    }
+    if(type==='twitter-open'){
+      window.open('https://www.twitter.com','_blank')
+    }
+    if(type==='linkedin-open'){
+      window.open('https://www.linkedin.com','_blank')
+    }
+    if(type==='whatsapp-open'){
+      window.open('https://www.whatsapp.com','_blank')
+    }
+    if(type==='spotify-open'){
+      window.open('https://www.spotify.com','_blank')
+    }
+    if(type==='amazon-open'){
+      window.open('https://www.amazon.com','_blank')
+    }
+    if(type==='netflix-open'){
+      window.open('https://www.netflix.com','_blank')
+    }
+    if(type==='netmirror-open'){
+      window.open('https://www.google.com/search?q=netmirror','_blank')
+    }
+    if(type==="youtube-search" || type==='youtube-play'){
+      const query=encodeURIComponent(userInput)
+      window.open(`https://www.youtube.com/results?search_query=${query}`,'_blank')
+    }
+  }
+
+
+
+
+
   useEffect(()=>{
     const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -35,7 +87,7 @@ function Home() {
      if(transcript.toLowerCase().includes(userData.assistantName.toLowerCase())){
       const data= await getGeminiResponse(transcript)
       console.log(data)
-      speak(data.response)
+      handleCommand(data)
      }
     }
   
